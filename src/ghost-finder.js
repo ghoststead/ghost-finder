@@ -1,6 +1,6 @@
 /**
  * Ghost Finder
- * v3.0.0
+ * v3.0.1
  * @author kingrayhan
  * @url https://rayhan.info
  */
@@ -85,7 +85,7 @@ class GhostFinder {
     }
 
     doSearch = async e => {
-        this.searchTerm = e.target.value
+        const searchTerm = e.target.value.toLowerCase();
         const posts = await this.api.posts.browse({
             limit: 'all',
             fields: `title,url,slug,html,feature_image,published_at,primary_author,primary_tag`,
@@ -93,15 +93,15 @@ class GhostFinder {
         })
 
         const filteredPosts = posts.filter(post => {
-            // let contentText = DOMPurify.sanitize(post.html, { ALLOWED_TAGS: [''] })
+            let contentText = DOMPurify.sanitize(post.html, { ALLOWED_TAGS: [''] })
 
-            return post.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+            return post.title.toLowerCase().includes(searchTerm) || contentText.includes(searchTerm);
         })
 
         this.resultCount = filteredPosts.length
 
         // if searchTerm's length is less then 1 character then stop here...
-        if (this.searchTerm.length === 0) {
+        if (searchTerm.length === 0) {
             this.showResult.innerHTML = ''
         } else {
             const result = filteredPosts
